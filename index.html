@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>バスケ練習チャンピオン</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', monospace;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 140, 0, 0.8) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 69, 0, 0.8) 0%, transparent 50%),
+                linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .title {
+            color: #fff;
+            font-size: 2.8em;
+            font-weight: 900;
+            text-shadow: 
+                0 0 10px rgba(255, 140, 0, 0.8),
+                0 0 20px rgba(255, 69, 0, 0.6),
+                0 0 30px rgba(255, 140, 0, 0.4);
+            margin-bottom: 10px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px rgba(255, 140, 0, 0.8), 0 0 20px rgba(255, 69, 0, 0.6), 0 0 30px rgba(255, 140, 0, 0.4); }
+            to { text-shadow: 0 0 20px rgba(255, 140, 0, 1), 0 0 30px rgba(255, 69, 0, 0.8), 0 0 40px rgba(255, 140, 0, 0.6); }
+        }
+
+        .subtitle {
+            color: #ffd700;
+            font-size: 1.3em;
+            font-weight: 400;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .game-container {
+            background: 
+                linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 140, 0, 0.3);
+            border-radius: 25px;
+            box-shadow: 
+                0 15px 40px rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            max-width: 900px;
+            width: 100%;
+            position: relative;
+        }
+
+        .player-area {
+            text-align: center;
+            margin-bottom: 30px;
+            background: 
+                linear-gradient(135deg, rgba(255, 140, 0, 0.2) 0%, rgba(255, 69, 0, 0.1) 100%);
+            border: 2px solid rgba(255, 140, 0, 0.5);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .player-area::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent, rgba(255, 140, 0, 0.1), transparent 30%);
+            animation: rotate 6s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .player {
+            font-size: 7em;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 20px rgba(255, 140, 0, 0.8));
+            animation: playerFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes playerFloat {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-15px) scale(1.1); }
+        }
+
+        .player-name {
+            font-size: 1.8em;
+            color: #ffd700;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+
+        .player-level {
+            font-size: 1.4em;
+            color: #87ceeb;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .status-bars {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .status-item {
+            text-align: center;
+        }
+
+        .status-label {
+            font-size: 1em;
+            color: #fff;
+            margin-bottom: 8px;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .progress-bar {
+            width: 130px;
+            height: 25px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+        }
+
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), transparent);
+            border-radius: 15px 15px 0 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 13px;
+            transition: width 0.8s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 49%, rgba(255, 255, 255, 0.4) 50%, transparent 51%);
+            animation: shine 2s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .stamina-fill { 
+            background: linear-gradient(135deg, #32cd32, #228b22);
+            box-shadow: 0 0 10px rgba(50, 205, 50, 0.6);
+        }
+        .skill-fill { 
+            background: linear-gradient(135deg, #ffd700, #ffa500);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+        }
+        .motivation-fill { 
+            background: linear-gradient(135deg, #ff69b4, #ff1493);
+            box-shadow: 0 0 10px rgba(255, 105, 180, 0.6);
+        }
+
+        .practice-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.6em;
+            color: #ffd700;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+
+        .practice-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .practice-btn {
+            background: linear-gradient(135deg, #ff6347, #ff4500);
+            border: none;
+            border-radius: 15px;
+            padding: 18px;
+            font-size: 1.2em;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 6px 20px rgba(255, 99, 71, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .practice-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .practice-btn:hover::before {
+            left: 100%;
+        }
+
+        .practice-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 
+                0 10px 30px rgba(255, 99, 71, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            background: linear-gradient(135deg, #ff4500, #ff6347);
+        }
+
+        .practice-btn:active {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .streak-info {
+            text-align: center;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.1));
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .streak-info::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #ffd700, #ffa500, #ffd700);
+            z-index: -1;
+            border-radius: 20px;
+            animation: borderGlow 3s linear infinite;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .streak-number {
+            font-size: 2.5em;
+            color: #ffd700;
+            font-weight: 900;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+
+        .streak-text {
+            color: #fff;
+            font-size: 1.2em;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .achievements {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(221, 160, 221, 0.1));
+            border: 2px solid rgba(138, 43, 226, 0.5);
+            border-radius: 20px;
+            padding: 25px;
+        }
+
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .achievement {
+            text-align: center;
+            padding: 15px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.4s ease;
+            border: 2px solid transparent;
+        }
+
+        .achievement.unlocked {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 165, 0, 0.2));
+            border: 2px solid rgba(255, 215, 0, 0.6);
+            transform: scale(1.1);
+            box-shadow: 
+                0 8px 25px rgba(255, 215, 0, 0.4),
+                0 0 20px rgba(255, 215, 0, 0.6);
+        }
+
+        .achievement-icon {
+            font-size: 2.5em;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.8));
+        }
+
+        .achievement-name {
+            font-size: 0.9em;
+            color: #fff;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9));
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 140, 0, 0.5);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 
+                0 20px 60px rgba(0,0,0,0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            z-index: 1000;
+            text-align: center;
+            max-width: 450px;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+            animation: messageAppear 0.5s ease;
+        }
+
+        @keyframes messageAppear {
+            from { 
+                opacity: 0; 
+                transform: translate(-50%, -50%) scale(0.7) rotateY(90deg); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translate(-50%, -50%) scale(1) rotateY(0deg); 
+            }
+        }
+
+        .message-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 20px rgba(255, 140, 0, 0.8));
+        }
+
+        .message-text {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 25px;
+            font-weight: 700;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .message-btn {
+            background: linear-gradient(135deg, #32cd32, #228b22);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            cursor: pointer;
+            font-weight: 700;
+            box-shadow: 0 6px 20px rgba(50, 205, 50, 0.4);
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .message-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(50, 205, 50, 0.6);
+        }
+
+        .reset-section {
+            text-align: center;
+            margin-top: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(255, 82, 82, 0.05));
+            border: 2px solid rgba(255, 107, 107, 0.3);
+            border-radius: 15px;
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ff5252);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            cursor: pointer;
+            font-weight: 700;
+            font-family: 'Orbitron', monospace;
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
+            background: linear-gradient(135deg, #ff5252, #ff6b6b);
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, rgba(255, 140, 0, 0.3), transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255, 215, 0, 0.4), transparent),
+                radial-gradient(1px 1px at 90px 40px, rgba(255, 69, 0, 0.3), transparent),
+                radial-gradient(1px 1px at 130px 80px, rgba(255, 140, 0, 0.3), transparent);
+            background-repeat: repeat;
+            background-size: 150px 100px;
+            animation: float 20s linear infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) translateX(0px); }
+            33% { transform: translateY(-10px) translateX(10px); }
+            66% { transform: translateY(-5px) translateX(-5px); }
+            100% { transform: translateY(0px) translateX(0px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="title">🏀 バスケ練習チャンピオン 🏆</h1>
+        <p class="subtitle">練習してスーパープレイヤーになろう！</p>
+    </div>
+
+    <div class="game-container">
+        <div class="player-area">
+            <div class="player" id="player">👶</div>
+            <div class="player-name" id="playerName">しんじん</div>
+            <div class="player-level" id="playerLevel">レベル 1</div>
+            
+            <div class="status-bars">
+                <div class="status-item">
+                    <div class="status-label">💪 たいりょく</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill stamina-fill" id="staminaBar"></div>
+                    </div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">⭐ スキル</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill skill-fill" id="skillBar"></div>
+                    </div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">🔥 やるき</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill motivation-fill" id="motivationBar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="practice-section">
+            <h2 class="section-title">🏀 きょうの じしゅれんしゅう</h2>
+            <div class="practice-buttons">
+                <button class="practice-btn" data-skill="shooting">🎯 シュート</button>
+                <button class="practice-btn" data-skill="dribble">⚡ ドリブル</button>
+                <button class="practice-btn" data-skill="passing">🤝 パス</button>
+                <button class="practice-btn" data-skill="defense">🛡️ ディフェンス</button>
+                <button class="practice-btn" data-skill="running">🏃 らんにんぐ</button>
+                <button class="practice-btn" data-skill="freethrow">🎪 フリースロー</button>
+            </div>
+        </div>
+
+        <div class="streak-info">
+            <div class="streak-number" id="streakNumber">0</div>
+            <div class="streak-text">日れんぞく れんしゅう中！</div>
+        </div>
+
+        <div class="achievements">
+            <h2 class="section-title">🏆 トロフィー</h2>
+            <div class="achievement-grid" id="achievementGrid">
+                <div class="achievement" data-achievement="firstPractice">
+                    <div class="achievement-icon">🌟</div>
+                    <div class="achievement-name">はじめの一歩</div>
+                </div>
+                <div class="achievement" data-achievement="streak3">
+                    <div class="achievement-icon">🔥</div>
+                    <div class="achievement-name">3日れんぞく</div>
+                </div>
+                <div class="achievement" data-achievement="streak7">
+                    <div class="achievement-icon">💪</div>
+                    <div class="achievement-name">1しゅうかん</div>
+                </div>
+                <div class="achievement" data-achievement="levelUp">
+                    <div class="achievement-icon">📈</div>
+                    <div class="achievement-name">レベルアップ</div>
+                </div>
+                <div class="achievement" data-achievement="allSkills">
+                    <div class="achievement-icon">🎯</div>
+                    <div class="achievement-name">オールラウンド</div>
+                </div>
+                <div class="achievement" data-achievement="champion">
+                    <div class="achievement-icon">👑</div>
+                    <div class="achievement-name">チャンピオン</div>
+                </div>
+                <div class="achievement" data-achievement="dedication">
+                    <div class="achievement-icon">🏀</div>
+                    <div class="achievement-name">れんしゅうおに</div>
+                </div>
+                <div class="achievement" data-achievement="superstar">
+                    <div class="achievement-icon">⭐</div>
+                    <div class="achievement-name">スーパースター</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="reset-section">
+            <button class="reset-btn" id="resetBtn">🔄 さいしょから はじめる</button>
+            <br><br>
+            <button class="reset-btn" id="reloadBtn">🔄 ページをリロード</button>
+        </div>
+    </div>
+
+    <div class="message" id="messageModal">
+        <div class="message-icon" id="messageIcon">🎉</div>
+        <div class="message-text" id="messageText"></div>
+        <button class="message-btn" id="messageOkBtn">OK</button>
+    </div>
+
+    <!-- リセット確認用モーダル -->
+    <div class="message" id="resetModal" style="display: none;">
+        <div class="message-icon">🔄</div>
+        <div class="message-text">
+            ゲームをリセットしますか？<br><br>
+            ⚠️ すべてのデータが消えます！<br>
+            • レベル、スキル、実績など全てリセット<br>
+            • この操作は取り消せません<br><br>
+            本当にリセットしますか？
+        </div>
+        <div style="display: flex; gap: 15px; justify-content: center;">
+            <button class="message-btn" id="resetConfirmBtn" style="background: linear-gradient(135deg, #ff6b6b, #ff5252);">🔄 リセット実行</button>
+            <button class="message-btn" id="resetCancelBtn">❌ キャンセル</button>
+        </div>
+    </div>
+
+    <script>
+        // グローバル変数として定義
+        var gameData = {
+            playerLevel: 1,
+            playerStage: 0,
+            stamina: 100,
+            skill: 0,
+            motivation: 50,
+            streak: 0,
+            totalPracticeSessions: 0,
+            practicedSkills: [],
+            achievements: [],
+            lastPracticeDate: null
+        };
+
+        var playerStages = [
+            { emoji: '👶', name: 'しんじん' },
+            { emoji: '🧒', name: 'アマチュア' },
+            { emoji: '👦', name: 'セミプロ' },
+            { emoji: '🏀', name: 'プロせんしゅ' },
+            { emoji: '⭐', name: 'スーパースター' }
+        ];
+
+        var achievementData = {
+            firstPractice: { name: 'はじめの一歩', description: 'はじめて れんしゅう した！' },
+            streak3: { name: '3日れんぞく', description: '3日つづけて れんしゅう した！' },
+            streak7: { name: '1しゅうかん', description: '7日つづけて れんしゅう した！' },
+            levelUp: { name: 'レベルアップ', description: 'せんしゅが せいちょう した！' },
+            allSkills: { name: 'オールラウンド', description: 'すべての スキルを れんしゅう した！' },
+            champion: { name: 'チャンピオン', description: 'レベル5に とうたつ した！' },
+            dedication: { name: 'れんしゅうおに', description: '50回 れんしゅう した！' },
+            superstar: { name: 'スーパースター', description: '100回 れんしゅう した！' }
+        };
+
+        var practiceMessages = {
+            shooting: ['シュートが きまった！', 'ナイスシュート！', '3ポイント せいこう！'],
+            dribble: ['ドリブル じょうたつ した！', 'テクニカル！', 'スピードアップ！'],
+            passing: ['パス せいこう！', 'チームワーク ばつぐん！', 'アシスト！'],
+            defense: ['ディフェンス かんぺき！', 'スティール！', 'ブロック！'],
+            running: ['たいりょく アップ！', 'はやく なった！', 'きんにく きょうか！'],
+            freethrow: ['フリースロー にゅーしょう！', 'せいかく せい アップ！', 'かんしん！']
+        };
+
+        // アクティブなタイマーを追跡
+        var activeTimers = [];
+
+        // タイマーを安全に設定する関数
+        function setSafeTimeout(func, delay) {
+            var timerId = setTimeout(func, delay);
+            activeTimers.push(timerId);
+            return timerId;
+        }
+
+        // すべてのタイマーをクリアする関数
+        function clearAllTimers() {
+            for (var i = 0; i < activeTimers.length; i++) {
+                clearTimeout(activeTimers[i]);
+            }
+            activeTimers = [];
+        }
+
+        // ?? 演算子の代替関数（古いブラウザ対応）
+        function nullishCoalescing(value, defaultValue) {
+            return (value !== null && value !== undefined) ? value : defaultValue;
+        }
+
+        // シンプルなリセット関数（confirm回避版）
+        function doReset() {
+            console.log('doReset関数が呼ばれました');
+            
+            // Claude.ai環境ではconfirm()が使えないので、独自モーダルを使用
+            console.log('リセット確認モーダルを表示します');
+            document.getElementById('resetModal').style.display = 'block';
+        }
+
+        // 実際のリセット処理
+        function executeReset() {
+            console.log('✅ リセット実行開始');
+            
+            try {
+                // リセット確認モーダルを閉じる
+                document.getElementById('resetModal').style.display = 'none';
+                
+                // 1. すべてのタイマーをキャンセル
+                console.log('1️⃣ タイマーをクリア中...');
+                clearAllTimers();
+                
+                // 2. LocalStorageを完全クリア
+                console.log('2️⃣ LocalStorageをクリア中...');
+                localStorage.removeItem('basketballGame');
+                localStorage.clear(); // 念のため全クリア
+                
+                // 3. ゲームデータを初期値に完全リセット
+                console.log('3️⃣ ゲームデータをリセット中...');
+                gameData = {
+                    playerLevel: 1,
+                    playerStage: 0,
+                    stamina: 100,
+                    skill: 0,
+                    motivation: 50,
+                    streak: 0,
+                    totalPracticeSessions: 0,
+                    practicedSkills: [],
+                    achievements: [],
+                    lastPracticeDate: null
+                };
+                console.log('新しいゲームデータ:', gameData);
+                
+                // 4. 実績表示をリセット
+                console.log('4️⃣ 実績表示をリセット中...');
+                var achievementElements = document.querySelectorAll('.achievement');
+                for (var i = 0; i < achievementElements.length; i++) {
+                    achievementElements[i].classList.remove('unlocked');
+                }
+                console.log('実績リセット完了:', achievementElements.length, '個');
+                
+                // 5. 表示を強制更新
+                console.log('5️⃣ 表示を更新中...');
+                document.getElementById('player').textContent = '👶';
+                document.getElementById('playerName').textContent = 'しんじん';
+                document.getElementById('playerLevel').textContent = 'レベル 1';
+                document.getElementById('staminaBar').style.width = '100%';
+                document.getElementById('skillBar').style.width = '0%';
+                document.getElementById('motivationBar').style.width = '50%';
+                document.getElementById('streakNumber').textContent = '0';
+                
+                // 6. ★最重要★ リセット後にsaveGame()を呼ぶ
+                console.log('6️⃣ リセット後のデータを保存中...');
+                saveGame();
+                
+                // 7. 確認のため再度ロード
+                console.log('7️⃣ 確認のため再ロード...');
+                setTimeout(function() {
+                    loadGame();
+                    console.log('🎉 リセット完了！現在のデータ:', gameData);
+                }, 100);
+                
+                // 成功メッセージを表示
+                showMessage('🎉', 'ゲームをリセットしました！\n新しいゲームを始めましょう！');
+                
+            } catch(e) {
+                console.error('❌ リセットエラー:', e);
+                showMessage('❌', 'リセットでエラーが発生しました:\n' + e.message);
+            }
+        }
+
+        // リセットキャンセル
+        function cancelReset() {
+            console.log('❌ ユーザーがリセットをキャンセルしました');
+            document.getElementById('resetModal').style.display = 'none';
+            showMessage('ℹ️', 'リセットをキャンセルしました。\nゲームを続けてください！');
+        }
+
+        // 練習実行
+        function doPractice(skill) {
+            var today = new Date().toDateString();
+            
+            if (gameData.lastPracticeDate !== today) {
+                if (gameData.lastPracticeDate === new Date(Date.now() - 86400000).toDateString()) {
+                    gameData.streak++;
+                } else {
+                    gameData.streak = 1;
+                }
+                gameData.lastPracticeDate = today;
+            }
+
+            if (gameData.practicedSkills.indexOf(skill) === -1) {
+                gameData.practicedSkills.push(skill);
+            }
+            
+            gameData.motivation = Math.min(100, gameData.motivation + 12);
+            gameData.skill = Math.min(100, gameData.skill + 15);
+            gameData.stamina = Math.max(0, gameData.stamina - 8);
+            gameData.totalPracticeSessions++;
+
+            var oldStage = gameData.playerStage;
+            var requiredSessions = [0, 8, 20, 40, 70];
+            for (var i = requiredSessions.length - 1; i >= 0; i--) {
+                if (gameData.totalPracticeSessions >= requiredSessions[i]) {
+                    gameData.playerStage = Math.min(i, playerStages.length - 1);
+                    break;
+                }
+            }
+
+            if (gameData.playerStage > oldStage) {
+                gameData.playerLevel++;
+                showMessage('🎉', 'おめでとう！' + playerStages[gameData.playerStage].name + ' に せいちょう したよ！');
+                unlockAchievement('levelUp');
+                if (gameData.playerLevel >= 5) unlockAchievement('champion');
+            } else {
+                var messages = practiceMessages[skill];
+                showMessage('💪', messages[Math.floor(Math.random() * messages.length)]);
+            }
+
+            checkAchievements();
+            updateDisplay();
+            saveGame();
+        }
+
+        function checkAchievements() {
+            if (gameData.totalPracticeSessions >= 1) unlockAchievement('firstPractice');
+            if (gameData.streak >= 3) unlockAchievement('streak3');
+            if (gameData.streak >= 7) unlockAchievement('streak7');
+            if (gameData.practicedSkills.length >= 6) unlockAchievement('allSkills');
+            if (gameData.totalPracticeSessions >= 50) unlockAchievement('dedication');
+            if (gameData.totalPracticeSessions >= 100) unlockAchievement('superstar');
+        }
+
+        function unlockAchievement(achievementKey) {
+            if (gameData.achievements.indexOf(achievementKey) === -1) {
+                gameData.achievements.push(achievementKey);
+                var achievementInfo = achievementData[achievementKey];
+                setSafeTimeout(function() {
+                    showMessage('🏆', 'トロフィー ゲット！「' + achievementInfo.name + '」\n' + achievementInfo.description);
+                }, 1000);
+            }
+        }
+
+        function updateDisplay() {
+            var currentStage = playerStages[gameData.playerStage];
+            document.getElementById('player').textContent = currentStage.emoji;
+            document.getElementById('playerName').textContent = currentStage.name;
+            document.getElementById('playerLevel').textContent = 'レベル ' + gameData.playerLevel;
+
+            document.getElementById('staminaBar').style.width = gameData.stamina + '%';
+            document.getElementById('skillBar').style.width = gameData.skill + '%';
+            document.getElementById('motivationBar').style.width = gameData.motivation + '%';
+
+            document.getElementById('streakNumber').textContent = gameData.streak;
+
+            var achievementElements = document.querySelectorAll('.achievement');
+            for (var i = 0; i < achievementElements.length; i++) {
+                var el = achievementElements[i];
+                var achievementKey = el.getAttribute('data-achievement');
+                if (gameData.achievements.indexOf(achievementKey) !== -1) {
+                    el.classList.add('unlocked');
+                } else {
+                    el.classList.remove('unlocked');
+                }
+            }
+
+            // 体力回復（安全なタイマー使用）
+            if (gameData.stamina < 100) {
+                setSafeTimeout(function() {
+                    gameData.stamina = Math.min(100, gameData.stamina + 2);
+                    updateDisplay();
+                    saveGame();
+                }, 120000);
+            }
+        }
+
+        function showMessage(icon, text) {
+            document.getElementById('messageIcon').textContent = icon;
+            document.getElementById('messageText').textContent = text;
+            document.getElementById('messageModal').classList.add('show');
+        }
+
+        function closeMessage() {
+            document.getElementById('messageModal').classList.remove('show');
+        }
+
+        function loadGame() {
+            try {
+                var saved = localStorage.getItem('basketballGame');
+                if (saved) {
+                    var data = JSON.parse(saved);
+                    // nullishCoalescing関数で0を正しく扱う
+                    gameData.playerLevel = nullishCoalescing(data.playerLevel, 1);
+                    gameData.playerStage = nullishCoalescing(data.playerStage, 0);
+                    gameData.stamina = nullishCoalescing(data.stamina, 100);
+                    gameData.skill = nullishCoalescing(data.skill, 0);
+                    gameData.motivation = nullishCoalescing(data.motivation, 50);
+                    gameData.streak = nullishCoalescing(data.streak, 0);
+                    gameData.totalPracticeSessions = nullishCoalescing(data.totalPracticeSessions, 0);
+                    gameData.practicedSkills = nullishCoalescing(data.practicedSkills, []);
+                    gameData.achievements = nullishCoalescing(data.achievements, []);
+                    gameData.lastPracticeDate = nullishCoalescing(data.lastPracticeDate, null);
+                }
+            } catch(e) {
+                console.log('データ読み込みエラー:', e);
+            }
+            updateDisplay();
+            checkStreak();
+        }
+
+        function saveGame() {
+            try {
+                localStorage.setItem('basketballGame', JSON.stringify(gameData));
+            } catch(e) {
+                console.log('データ保存エラー:', e);
+            }
+        }
+
+        function checkStreak() {
+            var today = new Date().toDateString();
+            var yesterday = new Date(Date.now() - 86400000).toDateString();
+            
+            if (gameData.lastPracticeDate === yesterday) {
+                // 連続継続
+            } else if (gameData.lastPracticeDate !== today) {
+                gameData.streak = 0;
+            }
+        }
+
+        // ページ読み込み時に実行 - DOMContentLoaded で確実にイベント登録
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('DOMContentLoaded: イベント登録開始');
+            
+            // 練習ボタンのイベント登録
+            var practiceButtons = document.querySelectorAll('.practice-btn');
+            console.log('練習ボタン数:', practiceButtons.length);
+            for (var i = 0; i < practiceButtons.length; i++) {
+                var btn = practiceButtons[i];
+                var skill = btn.getAttribute('data-skill');
+                // クロージャを使ってスキル値を保持
+                (function(skillValue) {
+                    btn.addEventListener('click', function() {
+                        console.log('練習ボタンクリック:', skillValue);
+                        doPractice(skillValue);
+                    });
+                })(skill);
+            }
+            
+            // リセットボタンのデバッグ強化
+            var resetBtn = document.getElementById('resetBtn');
+            console.log('リセットボタン要素:', resetBtn);
+            if (resetBtn) {
+                console.log('リセットボタンが見つかりました');
+                resetBtn.addEventListener('click', function() {
+                    console.log('リセットボタンがクリックされました！');
+                    doReset();
+                });
+                
+                // 追加：直接テスト用の関数も登録
+                resetBtn.onclick = function() {
+                    console.log('onclick: リセットボタンクリック');
+                    doReset();
+                };
+            } else {
+                console.error('リセットボタンが見つかりません！');
+            }
+            
+            // リロードボタンのイベント登録
+            var reloadBtn = document.getElementById('reloadBtn');
+            console.log('リロードボタン要素:', reloadBtn);
+            if (reloadBtn) {
+                reloadBtn.addEventListener('click', function() {
+                    console.log('リロードボタンクリック');
+                    location.reload();
+                });
+            }
+            
+            // メッセージOKボタンのイベント登録
+            var messageOkBtn = document.getElementById('messageOkBtn');
+            if (messageOkBtn) {
+                messageOkBtn.addEventListener('click', closeMessage);
+            }
+            
+            // リセット確認モーダルのイベント登録
+            var resetConfirmBtn = document.getElementById('resetConfirmBtn');
+            if (resetConfirmBtn) {
+                resetConfirmBtn.addEventListener('click', executeReset);
+            }
+            
+            var resetCancelBtn = document.getElementById('resetCancelBtn');
+            if (resetCancelBtn) {
+                resetCancelBtn.addEventListener('click', cancelReset);
+            }
+            
+            // テスト用：リセット関数が存在するかチェック
+            console.log('doReset関数:', typeof doReset);
+            
+            // ゲーム初期化
+            loadGame();
+            console.log('ゲーム初期化完了');
+        });
+
+        // テスト用グローバル関数
+        window.testReset = function() {
+            console.log('テストリセット関数が呼ばれました');
+            doReset();
+        };
+    </script>
+</body>
+</html>
